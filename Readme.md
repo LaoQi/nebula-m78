@@ -3,7 +3,7 @@
 ### 依赖
 
 * markdown    
-* pymdownx 
+* pymdown-extensions
 
 ### 生成代码样式 
 
