@@ -15,8 +15,9 @@ import timeit
 import markdown
 from pymdownx import extra
 
-ABSTRACT_LEN = 300
+ABSTRACT_LEN = 512
 INDEX_LIMIT = 20
+PAGE_EXT = '.markdown'
 TAG_TITLE = '{{TITLE}}'
 TAG_CONTENT = '{{CONTENT}}'
 RE_TRIP = re.compile('<.*?>|\n')
@@ -31,18 +32,22 @@ class MyPostprocessor(markdown.postprocessors.Postprocessor):
         self.abstract = ''
 
     def run(self, text):
-        abstract_len = ABSTRACT_LEN
+        start = 0
+        end = ABSTRACT_LEN
         result = RE_TITLE.match(text)
+
         if result:
             self.title = result.group(1)
-            abstract_len = len(self.title) + ABSTRACT_LEN + 9 # abstract + <h1></h1>
-            self.abstract = RE_TRIP.sub('', text[len(self.title) + 9:])[:abstract_len]
+            start = len(self.title) + 9
+
+        custom_abs = text.find('<hr />')
+        if custom_abs > 0 and custom_abs < ABSTRACT_LEN:
+            end = custom_abs
+            self.abstract = text[start:end]
         else:
-            self.abstract = RE_TRIP.sub('', text)[:abstract_len]
+            self.abstract = RE_TRIP.sub('', text[start:])[:end]
 
         content = TEMPLATE.replace(TAG_TITLE, self.title)
-
-        self.abstract = RE_TRIP.sub('', self.abstract)
         return content.replace(TAG_CONTENT, text)
 
 def generate(src, dst):
@@ -85,15 +90,16 @@ def building(source_root, target_root):
             else:
                 relpath = '/' + relpath + '/'
 
-            if filename.endswith(".md"):
-                title, abstract, timestamp = generate(file_path, target_file[:-3] + ".html")
+            end = -len(PAGE_EXT)
+            if filename.endswith(PAGE_EXT):
+                title, abstract, timestamp = generate(file_path, target_file[:end] + ".html")
                 if relpath not in struct:
                     struct[relpath] = []
-                struct[relpath].append({'title':title, 'path':filename[:-3], 'mtime': timestamp})
+                struct[relpath].append({'title':title, 'path':filename[:end], 'mtime': timestamp})
 
                 result.append({
                     'title':title, 'abstract':abstract,
-                    'mtime':timestamp, 'path':relpath + filename[:-3] + '.html'})
+                    'mtime':timestamp, 'path':relpath + filename[:end] + '.html'})
                 count_convert += 1
             else:
                 shutil.copy(file_path, target_file)
@@ -103,8 +109,10 @@ def building(source_root, target_root):
 
     # sort
     result.sort(key=lambda x: x['mtime'])
+    result.reverse()
     for key in struct:
         struct[str(key)].sort(key=lambda x: x['mtime'])
+        struct[str(key)].reverse()
 
     # storage
     for i in range(0, len(result), INDEX_LIMIT):

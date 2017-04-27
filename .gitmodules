@@ -1,0 +1,3 @@
+[submodule "document/game/nebulaJS"]
+	path = document/game/nebulaJS
+	url = https://github.com/LaoQi/nebulaJS.git
