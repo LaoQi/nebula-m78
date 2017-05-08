@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd /www/nebula-m78.org
+unset GIT_DIR
+git reset --hard
+git pull
+git submodule update --init --recursive
+git ls-files | while read file; do touch -d $(git log -1 --format="@%ct" "$file") "$file"; done
+python3 cow.py document web
