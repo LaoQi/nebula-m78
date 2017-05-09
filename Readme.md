@@ -4,8 +4,9 @@
 
 ### 依赖
 
-* markdown    
+* markdown
 * pymdown-extensions
+* pygments
 
 ### 生成代码样式 
 

@@ -55,6 +55,7 @@ def generate(src, dst):
     """conver md2html"""
     input_file = codecs.open(src, mode="r", encoding="utf-8")
     text = input_file.read()
+    input_file.close()
 
     markd = markdown.Markdown(extensions=[
         extra.makeExtension(), sane_lists.makeExtension()])
@@ -63,6 +64,7 @@ def generate(src, dst):
 
     output_file = codecs.open(dst, "w", encoding="utf-8")
     output_file.write(markd.convert(text))
+    output_file.close()
     status = os.stat(src)
     return (processor.title, processor.abstract, status[stat.ST_MTIME])
 
@@ -147,8 +149,9 @@ if __name__ == "__main__":
     <body>{{CONTENT}}</body>
 </html>"""
     if os.path.exists('template.html'):
-        with open('template.html', mode='r') as t:
-            TEMPLATE = t.read()
+        t = codecs.open('template.html', mode="r", encoding="utf-8")
+        TEMPLATE = t.read()
+        t.close()
 
     if not check(sys.argv[1]) or not check(sys.argv[2]):
         print('Error Path')
