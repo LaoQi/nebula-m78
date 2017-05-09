@@ -8,7 +8,7 @@
 * 静态页面就好，方便迁移也无需评论（反正也没人看）  
 * 用git一类的版本管理软件进行管理  
 
-于是就有了现在这个小脚本[cow.py](https://github.com/LaoQi/icode/tree/master/nebula/cow)
+于是就有了现在这个小脚本[cow.py](https://github.com/LaoQi/nebula-m78/blob/master/cow.py)
 
 ---------
 
