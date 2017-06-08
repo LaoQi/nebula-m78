@@ -2,7 +2,8 @@
 
 接上回的想法，先把比较好处理的都买了下来，比如：机械轴，几个芯片核心板这些。正好看到一个比较有意思的东西[Digispark](http://digistump.com/products/1)  
 国外人民都生活在水深火热之中，他们买一个差不多7$左右，而我们在某宝大概7￥就可以买到一个了。  
-![digispark](/keyboard/digispark.jpg)
+![digispark](/keyboard/digispark.jpg)  
+图片来自http://digistump.com/
 
 ---------  
 
@@ -21,7 +22,8 @@
   
 我也是顺手买了一个，正好拿过来先试水，网上也有不少资料。这个可以使用arduino IDE并且还自带了hid keyboard的简单demo，缺点大概就是IO太少了，只有6个，并且不可能全都能用，下面我会说到。先看看我做成的东西  
 ![](/keyboard/one_key_keyboard.jpg)  
-这是一个只有一个按键的键盘，虽然只有一个按键，但确确实实是一个标准的hid键盘。因为IO口太少，6个口中`PB5`是默认的`Reset`，`PB3`和`PB4`作为USB的`D+`和`D-`信号线，`PB0`我改成了`bootloader`的jumper口（应该不影响使用），`PB1`上控制板子带的一个LED不是很想用，最后仅仅只剩下一个`PB2`是空闲的了。  
+这是一个只有一个按键的键盘，虽然只有一个按键，但确确实实是一个标准的hid键盘。<S>Jeff Dean的键盘</S>  
+因为IO口太少，6个口中`PB5`是默认的`Reset`，`PB3`和`PB4`作为USB的`D+`和`D-`信号线，`PB0`我改成了`bootloader`的jumper口（应该不影响使用），`PB1`上控制板子带的一个LED不是很想用，最后仅仅只剩下一个`PB2`是空闲的了。  
   
 `Digispark`用的bootloader项目名叫[micronucleus](https://github.com/micronucleus/micronucleus)，本身是等待5秒后切换到用户程序开始执行，但项目中是提供了jumper的功能的，简单修改开启下就好了。我设定的`PB0`下拉时进入刷写模式，这样普通情况下就可以直接作为键盘而不用等待5s。
 
@@ -94,3 +96,12 @@ recommended.
     0xc0                           // END_COLLECTION
 ```  
 中间省略掉了LED回报的描述，但实测7键在win10下面是没什么问题的。也就是说起码可以简单的就实现7键无冲。(并没有支持boot protocol)
+ 
+
+参考的一些文章：  
+
+* [使用digispark ATtiny85制作一个简易三键键盘](http://www.roadna.com/2016/08/06/digispark-3keys-keyboard/)  
+* [如何用不到10元人民币DIY一个YubiKey](https://www.textarea.com/zhicheng/ruhe-yong-budao-10-yuan-renminbi-diy-yige-yubikey-395/)  
+* [digispark的wiki](http://digistump.com/wiki/digispark)  
+* [USB学习小记-HID类键盘的报告描述符的理解](http://www.cnblogs.com/heiyue/p/3341030.html)  
+* [usb.org文档 usb1.1协议](http://www.usb.org/developers/hidpage/)  
