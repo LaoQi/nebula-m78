@@ -105,3 +105,4 @@ recommended.
 * [digispark的wiki](http://digistump.com/wiki/digispark)  
 * [USB学习小记-HID类键盘的报告描述符的理解](http://www.cnblogs.com/heiyue/p/3341030.html)  
 * [usb.org文档 usb1.1协议](http://www.usb.org/developers/hidpage/)  
+
