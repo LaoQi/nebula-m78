@@ -46,7 +46,7 @@
         function render(index) {
             var container = document.getElementById('threads-container')
             container.innerHTML = ''
-            requestJSON('/index.' + index + '.json', function (data) {
+            requestJSON('/index.' + index + '.json?' + Math.random(), function (data) {
                 var template = document.getElementsByClassName('temp-thread')[0]
                 for (var i in data) {
                     var li = template.cloneNode(true)

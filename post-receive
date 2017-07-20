@@ -6,4 +6,4 @@ git reset --hard
 git pull
 git submodule update --init --recursive
 git ls-files | while read file; do touch -d $(git log -1 --format="@%ct" "$file") "$file"; done
-python3 cow.py document web
+python3 cow.py docs web
