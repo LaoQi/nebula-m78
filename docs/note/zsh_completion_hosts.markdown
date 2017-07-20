@@ -31,3 +31,4 @@ zstyle -e ':completion::*:*:*:hosts' hosts 'reply=($(SearchHostsConfig))'
 ```
 
 发现有些事情其实简单尝试一下，说不定没有看起来那么困难。
+
