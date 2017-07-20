@@ -6,14 +6,15 @@ pre{ background-color:rgba(0,0,0,0.1);border-radius: 0.8em; padding: 0.5em 0.8em
 pre>code{ background-color:rgba(200,200,200, 0); padding: 0.2em 0.2em 0.2em 0; }
 img { height: auto; max-width:90%; margin: 1em 1em 1em 1em; }
 p { text-indent: 2em; }
-#banner { padding-top: 1em;padding-bottom: 1em;padding-left: 1em;text-align: left;background-color: #EEE; }
-#banner>h1>a { text-decoration: none; color: rgba(0, 0, 0, 0.3) }
-#threads-container { list-style: none; color: #111;margin: 0 auto 0 auto;text-align: left;max-width: 80em;padding: 1em 1em 1em 1em;line-height: 1.5em;word-break: break-all;word-wrap: break-word; }
-#footer { background-color: #EEE; height: 1.5em; padding-top: 1em; margin-top: 3em; }
+#banner { padding-top: 0em;padding-bottom: 1em; height: 15em; padding-left: 1em; text-align: left;background-color: #5ca7d4; }
+#banner>h1 { display: inline; overflow: hidden; }
+#banner>h1>a {overflow: hidden; text-overflow:clip; text-decoration: none; color: white; font-size: 6em; }
+#threads-container { list-style: none; padding: 1em 1em 1em 1em; color: #111;margin: 0 auto 0 auto; line-height: 1.5em;word-break: break-all;word-wrap: break-word; }
+#footer { background-color: #5ca7d4; height: 1.5em; padding-top: 1em; margin-top: 3em; }
 #pagination { margin: 0 2em 0 1em; }
 #footer-list { text-align: left; margin-left: 1em; font-size: 0.7em; color: #333; }
-#content{ margin: 0 auto 0 auto; text-align: left; max-width:80em; padding: 1em 1em 1em 1em; word-break: break-all;word-wrap: break-word;}
-.thread-title>a { text-decoration: none; color:#111 }
+#content{ margin: 0 auto 0 auto; text-align: left; max-width:65em; padding: 1em 1em 1em 1em; word-break: break-all;word-wrap: break-word;}
+.thread-title>a { text-decoration: none; color:#111; line-height:2em; }
 .thread-bar { margin-top: 1em;text-align: right; }
 .thread-bar>span { margin-left: 1em; }
 .template { display: none; }
