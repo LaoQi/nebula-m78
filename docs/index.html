@@ -6,28 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <link rel="stylesheet" href="/style.css" type="text/css">
-    <script>
-        window.requestJSON = function (url, success, failed) {
-            var xh = new XMLHttpRequest()
-            xh.onreadystatechange = function () {
-                if (xh.readyState === XMLHttpRequest.DONE) {
-                    if (xh.status === 200) {
-                        success(JSON.parse(xh.responseText))
-                    } else if (failed) {
-                        failed(xh)
-                    }
-                }
-            }
-            xh.open('GET', url)
-            xh.send(null)
-        }
-    </script>
+    <script type="text/javascript" src="script.js"></script>
+	<script>
+		window.onhashchange = hashRoute
+		window.onload = function() {
+			drawBanner()
+			hashRoute()
+			footerMove()
+			document.getElementById("banner").onclick = function(){
+				window.location.href = "/"
+			}
+		}
+		window.onresize = onResize
+	</script>
 </head>
 
 <body>
-    <div id="banner">
-        <h1><a href="/">Nebula-M78</a></h1>
-    </div>
+	<canvas id="banner">
+	</canvas>
     <li class="template temp-thread">
         <h1 class="thread-title"><a href="{{path}}">{{title}}</a></h1>
         <span>{{abstract}}</span>
@@ -38,54 +34,9 @@
     <div id="pagination"><a href="#1">上一页</a><a href="#2">下一页</a></div>
     <div id="footer">
         <div id="footer-list">
-            <a href="http://github.com/LaoQi/nebula-m78">关于本站</a> | <a href="/archive.html">归档</a> | 一些有趣的东西: <a href="http://github.com/LaoQi/tccgi" title="用来学习http服务器的一个简单C语言实现">Tccgi</a> | 
+                <a href="/">首页</a> | <a href="http://github.com/LaoQi/nebula-m78">关于本站</a> | <a href="/archive.html">归档</a> | 一些有趣的东西: <a href="http://github.com/LaoQi/tccgi" title="用来学习http服务器的一个简单C语言实现">Tccgi</a> | 
             <a href="/game/nebulaJS/" title="小型的JS游戏框架">nebulaJS</a>
         </div>
     </div>
-    <script>
-        function render(index) {
-            var container = document.getElementById('threads-container')
-            container.innerHTML = ''
-            requestJSON('/index.' + index + '.json?' + Math.random(), function (data) {
-                var template = document.getElementsByClassName('temp-thread')[0]
-                for (var i in data) {
-                    var li = template.cloneNode(true)
-                    li.className = "thread"
-                    var text = li.innerHTML
-                    li.innerHTML = text.replace(/{{(.*?)}}/g, function (a, b) {
-                        if (b == 'mtime') {
-                            return new Date(parseInt(data[i][b]) * 1000).toLocaleString()
-                        }
-                        return data[i][b]
-                    })
-                    container.appendChild(li)
-                }
-                var pagination = document.getElementById('pagination')
-                if (index > 0) {
-                    pagination.innerHTML = '<a href="#' + (index - 1) + '">上一页</a><a href="#' + (index + 1) + '">下一页</a>'
-                } else {
-                    pagination.innerHTML = '<a href="#' + (index + 1) + '">下一页</a>'
-                }
-                document.documentElement.scrollTop = document.body.scrollTop = 0
-            }, function (e) {
-                var container = document.getElementById('threads-container')
-                container.innerHTML = '<h2>找不到内容，<a href="javascript:window.history.back()">返回上一页</a></h2>'
-                var pagination = document.getElementById('pagination')
-                pagination.innerHTML = ''
-            })
-        }
-
-        window.onhashchange = function () {
-            var index = parseInt(location.hash.substring(1))
-            if (index > 0) {
-                render(index)
-            } else {
-                render(0)
-            }
-        }
-
-        window.onhashchange()
-    </script>
 </body>
-
 </html>

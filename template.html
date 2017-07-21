@@ -5,13 +5,24 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" href="/style.css" type="text/css">
+		<script type="text/javascript" src="/script.js"></script>
+		<script>
+			window.onload = function() {
+				drawBanner()
+				footerMove()
+				document.getElementById("banner").onclick = function(){
+					window.location.href = "/"
+				}
+			}
+			window.onresize = onResize
+		</script>
     </head>
     <body>
-        <div id="banner"><h1><a href="/">Nebula-M78</a></h1></div>
+		<canvas id="banner"></canvas>
         <div id="content">{{CONTENT}}</div>
         <div id="footer">
             <div id="footer-list">
-                <a href="http://github.com/LaoQi/nebula-m78">关于本站</a> | <a href="/archive.html">归档</a> | 一些有趣的东西: <a href="http://github.com/LaoQi/tccgi" title="用来学习http服务器的一个简单C语言实现">Tccgi</a> | 
+                <a href="/">首页</a> | <a href="http://github.com/LaoQi/nebula-m78">关于本站</a> | <a href="/archive.html">归档</a> | 一些有趣的东西: <a href="http://github.com/LaoQi/tccgi" title="用来学习http服务器的一个简单C语言实现">Tccgi</a> | 
                 <a href="/game/nebulaJS/" title="小型的JS游戏框架">nebulaJS</a>
             </div>
         </div>
