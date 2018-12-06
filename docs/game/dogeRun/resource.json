@@ -1,0 +1,14 @@
+var Resource = {
+	"src" : [
+        "src/main.js",
+        "src/play.js",
+        "src/doge.js",
+        "src/block.js"
+	],
+	"texture" : {
+        "doge" : "Resource/doge.png",
+        "head" : "Resource/head.png",
+        "run" : "Resource/run.png",
+        "block1" : "Resource/blocktest.png"
+	}
+};
