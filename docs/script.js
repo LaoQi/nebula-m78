@@ -13,12 +13,19 @@ var requestJSON = function (url, success, failed) {
 	xh.send(null)
 }
 var drawBanner = function(){
+	var bgcolor = "#5ca7d4"
+
+	var me = document.createElement('meta')
+	me.name = "theme-color"
+	me.content = bgcolor
+	document.getElementsByTagName('meta')[0].after(me)
+
 	var text = "Nebula-M78"
 	var c = document.getElementById("banner")
 	c.width = c.offsetWidth
 	c.height = c.offsetHeight
 	var ctx = c.getContext("2d")
-	ctx.fillStyle = "#5ca7d4"
+	ctx.fillStyle = bgcolor
 	ctx.fillRect(0, 0, c.width, c.height)
 	var fsize = c.height
 	ctx.font = "Bold " + fsize + "px serif";

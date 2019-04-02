@@ -1,11 +1,14 @@
 body{ color: #111; margin:0; background-color: #fafafa; text-align: center; font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif; line-height: 1.5em; }
 a { text-decoration: none; } a:link { color: #0366d6; } a:visited { color: #0366d6; } a:hover { color: #ff5e2c; text-decoration: underline; }
 hr { border-color: hsla(0, 0%, 100%, 0.2); }
-code { background-color:#eff0f1; border-radius: 0.2em; margin-left: 0.2em; margin-right:0.2em; padding: 0.2em 0.3em 0.2em 0.3em; overflow: auto; }
+code { color: #24292e; background-color:rgba(27,31,35,.05); border-radius: 0.2em; margin-left: 0.2em; margin-right:0.2em; padding: 0.2em 0.3em 0.2em 0.3em; overflow: auto; }
 pre{ background-color:#eff0f1; border-radius: 0.8em; padding: 0.5em 0.8em 0.5em 0.8em; overflow: auto; }
 pre>code{ background-color:rgba(200,200,200, 0); padding: 0.2em 0.2em 0.2em 0; }
 img { height: auto; max-width:90%; margin: 1em 1em 1em 1em; }
 p { text-indent: 2em; }
+blockquote { border-left: .25em solid #dfe2e5; color: #6a737d; padding: 0 1em; }
+blockquote>:first-child { margin-top: 0; }
+blockquote>:last-child { margin-bottom: 0;}
 #banner { width:100%; padding-top: 0em; height: 12em; }
 #content{ margin: 0 auto 0 auto; text-align: left; max-width:65em; padding: 1em 1em 1em 1em; line-height: 1.8em; word-break: break-all;word-wrap: break-word;}
 #threads-container { list-style: none; padding: 1em 1em 1em 1em; color: #111;margin: 0 auto 0 auto; line-height: 1.5em;word-break: break-all;word-wrap: break-word; }
