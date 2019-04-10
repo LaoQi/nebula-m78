@@ -84,7 +84,18 @@ $ git cat-file blob 6452b9b72ec5b81250236694de681932a4dd4bb0
 
 ```
 
-实际使用过程中，我不知道如何直接通过路径来获取，目前只能组合使用 `ls-tree` 和 `cat-file` 。
+<s>实际使用过程中，我不知道如何直接通过路径来获取，目前只能组合使用 `ls-tree` 和 `cat-file` 。</s>
+修正：可以直接使用`cat-file`获取文件内容，同样的上述命令为
+```bash
+$ git cat-file blob master:.gitignore
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+```
 
 #### 打包成zip提供下载
 
