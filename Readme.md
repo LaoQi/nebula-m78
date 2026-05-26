@@ -1,23 +1,39 @@
-# My Blog [nebula-m78.org](https://www.nebula-m78.org/)  
+# My Blog [blog.madao.dev](https://blog.madao.dev/)
 
-## 简单的静态页面生成器  
+纯静态博客，Markdown 文件由浏览器端 Remarkable + Highlight.js 渲染。
 
-### 依赖
-
-* markdown
-* pymdown-extensions
-* pygments
-
-### 生成代码样式 
+## 本地预览
 
 ```shell
-pygmentize -f html -a .highlight -S default > highlight.css
-``` 
-
-### 生成数据
-
-```shell
-python cow.py path/source target/source
+./serve.sh
 ```
 
-生成`struct.json`结构数据，以及`index.x.json`摘要。
+访问 http://localhost:8080
+
+## 生成文章索引
+
+新增文章后运行：
+
+```shell
+python3 gen_index.py
+```
+
+会生成 `docs/articles.json`，需提交到仓库。
+
+## 部署
+
+推送到 `main` 分支后，GitHub Actions 自动部署到 GitHub Pages。
+
+## 目录结构
+
+```
+docs/               # GitHub Pages 部署目录
+  *.markdown        # 文章源文件
+  articles.json     # 文章索引
+  index.html        # SPA 入口
+  script.js         # 路由 + 渲染逻辑
+  style.css         # 样式
+  js/               # Remarkable, Highlight.js
+  css/hljs/         # Highlight.js 主题
+  game/             # 小游戏
+```

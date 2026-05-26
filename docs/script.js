@@ -1,96 +1,193 @@
-var requestJSON = function (url, success, failed) {
-	var xh = new XMLHttpRequest()
-	xh.onreadystatechange = function () {
-		if (xh.readyState === XMLHttpRequest.DONE) {
-			if (xh.status === 200) {
-				success(JSON.parse(xh.responseText))
-			} else if (failed) {
-				failed(xh)
-			}
-		}
-	}
-	xh.open('GET', url)
-	xh.send(null)
-}
-var drawBanner = function(){
-	var bgcolor = "#5ca7d4"
+var md = new remarkable.Remarkable({
+    html: true,
+    typographer: true,
+    highlight: function (str, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+            try {
+                return hljs.highlight(str, { language: lang }).value;
+            } catch (__) {}
+        }
+        try {
+            return hljs.highlightAuto(str).value;
+        } catch (__) {}
+        return '';
+    }
+});
 
-	var me = document.createElement('meta')
-	me.name = "theme-color"
-	me.content = bgcolor
-	document.getElementsByTagName('meta')[0].after(me)
+var articlesCache = null;
 
-	var text = "Nebula-M78"
-	var c = document.getElementById("banner")
-	c.width = c.offsetWidth
-	c.height = c.offsetHeight
-	var ctx = c.getContext("2d")
-	ctx.fillStyle = bgcolor
-	ctx.fillRect(0, 0, c.width, c.height)
-	var fsize = c.height
-	ctx.font = "Bold " + fsize + "px serif";
-	ctx.textAlign = "left";
-	ctx.fillStyle = "white";
-	ctx.fillText(text, 0, c.height / 3);
-	ctx.textAlign = "right";
-	ctx.fillText(text, c.width, c.height + c.height / 3);
-}
+var CATEGORIES = {
+    'jottings': '随笔',
+    'note': '笔记',
+    'keyboard': '自制键盘',
+    'pgit': 'PGIT',
+    '': '其他'
+};
 
-var footerMove = function() {
-	var footer = document.getElementById("footer")
-	if (document.body.offsetHeight < document.body.scrollHeight) {
-		footer.style.position = "absolute"
-		footer.style.bottom = "0px"
-	} else {
-		footer.style.position = ""
-		footer.style.bottom = ""
-	}
+function requestJSON(url, success, failed) {
+    var xh = new XMLHttpRequest();
+    xh.onreadystatechange = function () {
+        if (xh.readyState === XMLHttpRequest.DONE) {
+            if (xh.status === 200) {
+                success(JSON.parse(xh.responseText));
+            } else if (failed) {
+                failed(xh);
+            }
+        }
+    };
+    xh.open('GET', url);
+    xh.send(null);
 }
 
-var MyIndex = function(index) {
-	var container = document.getElementById('threads-container')
-	container.innerHTML = ''
-	requestJSON('/index.' + index + '.json?' + Math.random(), function (data) {
-		var template = document.getElementsByClassName('temp-thread')[0]
-		for (var i in data) {
-			var li = template.cloneNode(true)
-			li.className = "thread"
-			var text = li.innerHTML
-			li.innerHTML = text.replace(/{{(.*?)}}/g, function (a, b) {
-				if (b == 'mtime') {
-					return new Date(parseInt(data[i][b]) * 1000).toLocaleString()
-				}
-				return data[i][b]
-			})
-			container.appendChild(li)
-		}
-		var pagination = document.getElementById('pagination')
-		if (index > 0) {
-			pagination.innerHTML = '<a href="#' + (index - 1) + '">上一页</a><a href="#' + (index + 1) + '">下一页</a>'
-		} else {
-			pagination.innerHTML = '<a href="#' + (index + 1) + '">下一页</a>'
-		}
-		document.documentElement.scrollTop = document.body.scrollTop = 0
-		footerMove()
-	}, function (e) {
-		var container = document.getElementById('threads-container')
-		container.innerHTML = '<h2>找不到内容，<a href="javascript:window.history.back()">返回上一页</a></h2>'
-		var pagination = document.getElementById('pagination')
-		pagination.innerHTML = ''
-		footerMove()
-	})
+function loadArticles(callback) {
+    if (articlesCache) {
+        callback(articlesCache);
+        return;
+    }
+    requestJSON('/articles.json', function (data) {
+        articlesCache = data;
+        callback(data);
+    }, function () {
+        document.getElementById('content').innerHTML = '<h2>加载文章列表失败</h2>';
+    });
 }
 
-var hashRoute = function () {
-	var index = parseInt(location.hash.substring(1))
-	if (index > 0) {
-		MyIndex(index)
-	} else {
-		MyIndex(0)
-	}
+function getCategory(path) {
+    var parts = path.split('/');
+    if (parts.length > 2) {
+        return parts[1];
+    }
+    return '';
 }
 
-var onResize = function() {
-	drawBanner()
-	footerMove()
+function renderSidebar(activePath) {
+    loadArticles(function (articles) {
+        var grouped = {};
+        articles.forEach(function (a) {
+            var cat = getCategory(a.path);
+            if (!grouped[cat]) grouped[cat] = [];
+            grouped[cat].push(a);
+        });
+
+        var html = '';
+        var catOrder = ['jottings', 'note', 'keyboard', 'pgit', ''];
+        catOrder.forEach(function (cat) {
+            if (!grouped[cat]) return;
+            var label = CATEGORIES[cat] || cat;
+            html += '<div class="sidebar-category">';
+            html += '<div class="sidebar-category-title">' + label + '</div>';
+            html += '<ul class="sidebar-article-list">';
+            grouped[cat].forEach(function (a) {
+                var cls = (activePath && a.path === activePath) ? ' class="active"' : '';
+                html += '<li><a href="#' + a.path + '"' + cls + '>' + a.title + '</a></li>';
+            });
+            html += '</ul></div>';
+        });
+
+        document.getElementById('sidebar-inner').innerHTML = html;
+    });
 }
+
+function renderIndex() {
+    renderSidebar(null);
+    loadArticles(function (articles) {
+        if (articles.length === 0) {
+            document.getElementById('content').innerHTML = '<p>暂无文章</p>';
+            return;
+        }
+        renderArticle(articles[0].path, true);
+    });
+}
+
+function renderArticle(path, skipSidebar) {
+    if (!skipSidebar) renderSidebar(path);
+    var content = document.getElementById('content');
+    content.innerHTML = '<p>加载中...</p>';
+    fetch(path + '.md')
+        .then(function (res) {
+            if (!res.ok) throw new Error('Not found');
+            return res.text();
+        })
+        .then(function (text) {
+            content.innerHTML = md.render(text);
+            var h1 = content.querySelector('h1');
+            if (h1) {
+                document.title = h1.textContent + ' - Fish More Worry Less';
+                var dateStr = '';
+                loadArticles(function (articles) {
+                    for (var i = 0; i < articles.length; i++) {
+                        if (articles[i].path === path) {
+                            dateStr = articles[i].date;
+                            break;
+                        }
+                    }
+                    if (dateStr) {
+                        var dateEl = document.createElement('span');
+                        dateEl.className = 'article-date';
+                        dateEl.textContent = dateStr;
+                        h1.parentNode.insertBefore(dateEl, h1.nextSibling);
+                    }
+                });
+            }
+        })
+        .catch(function () {
+            content.innerHTML = '<h2>找不到内容，<a href="#/">返回首页</a></h2>';
+        });
+}
+
+function renderArchive() {
+    renderSidebar(null);
+    loadArticles(function (articles) {
+        var html = '<h1>归档</h1><ol id="threads-container">';
+        var lastYear = '';
+        for (var i = 0; i < articles.length; i++) {
+            var a = articles[i];
+            var year = a.date ? a.date.substring(0, 4) : '未知';
+            if (year !== lastYear) {
+                if (lastYear) html += '</ol>';
+                html += '<h2>' + year + '</h2><ol id="threads-container">';
+                lastYear = year;
+            }
+            html += '<li class="thread"><a href="#' + a.path + '">' + a.title + '</a> <span style="color:#6a737d;font-size:0.85em">' + a.date + '</span></li>';
+        }
+        html += '</ol>';
+        document.getElementById('content').innerHTML = html;
+        document.title = '归档 - Fish More Worry Less';
+    });
+}
+
+function hashRoute() {
+    var hash = location.hash.substring(1);
+    if (!hash || hash === '/') {
+        renderIndex();
+    } else if (hash === '/archive') {
+        renderArchive();
+    } else {
+        renderArticle(hash);
+    }
+    window.scrollTo(0, 0);
+}
+
+window.onhashchange = hashRoute;
+window.onload = function () {
+    hashRoute();
+
+    var toggle = document.getElementById('menu-toggle');
+    var nav = document.getElementById('header-nav');
+    toggle.addEventListener('click', function () {
+        nav.classList.toggle('open');
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!nav.contains(e.target) && e.target !== toggle) {
+            nav.classList.remove('open');
+        }
+    });
+
+    var sidebarToggle = document.getElementById('sidebar-toggle');
+    var sidebar = document.getElementById('sidebar');
+    sidebarToggle.addEventListener('click', function () {
+        sidebar.classList.toggle('open');
+        sidebarToggle.textContent = sidebar.classList.contains('open') ? '目录 ▴' : '目录 ▾';
+    });
+};

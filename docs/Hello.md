@@ -1,3 +1,6 @@
+<!-- date: 2017-07-21 -->
+<!-- title: Hello World -->
+
 # Hello World
 
 这是第一篇测试。   
