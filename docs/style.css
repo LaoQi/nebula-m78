@@ -158,6 +158,8 @@ th { background-color: #f6f8fa; }
     font-size: 0.8em;
     color: #6a737d;
     margin-bottom: 1em;
+    border-bottom: 1px solid #e1e4e8;
+    padding-bottom: 1em;
 }
 
 #threads-container {
