@@ -5,11 +5,22 @@
     "note": "笔记",
     "keyboard": "自制键盘",
     "pgit": "PGIT",
-	"ai": "人工智障"
+    "ai": "人工智障"
   },
-  "category_order": ["jottings", "note", "ai", "keyboard", "pgit"],
-  "exclude_dirs": ["js", "css", "game"],
+  "category_order": [
+    "jottings",
+    "note",
+    "ai",
+    "keyboard",
+    "pgit"
+  ],
+  "exclude_dirs": [
+    "js",
+    "css",
+    "game"
+  ],
   "source_root": "docs",
   "page_ext": ".md",
-  "default_port": 8000
+  "default_port": 8000,
+  "version": 1
 }

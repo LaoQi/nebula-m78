@@ -17,6 +17,7 @@ var md = new remarkable.Remarkable({
 var articlesCache = null;
 var categoriesCache = null;
 var categoryOrderCache = null;
+var siteVersion = null;
 
 function requestJSON(url, success, failed) {
     var xh = new XMLHttpRequest();
@@ -38,7 +39,12 @@ function loadArticles(callback) {
         callback(articlesCache);
         return;
     }
-    requestJSON('/articles.json', function (data) {
+    var url = '/articles.json';
+    if (siteVersion) {
+        url += '?v=' + siteVersion;
+    }
+    requestJSON(url, function (data) {
+        siteVersion = data.version || null;
         categoriesCache = data.categories || {};
         categoryOrderCache = data.category_order || Object.keys(categoriesCache);
         articlesCache = data.articles || data;
@@ -115,7 +121,11 @@ function renderArticle(path, skipSidebar) {
     if (!skipSidebar) renderSidebar(path);
     var content = document.getElementById('content');
     content.innerHTML = '<p>加载中...</p>';
-    fetch(path + '.md')
+    var mdUrl = path + '.md';
+    if (siteVersion) {
+        mdUrl += '?v=' + siteVersion;
+    }
+    fetch(mdUrl)
         .then(function (res) {
             if (!res.ok) throw new Error('Not found');
             return res.text();

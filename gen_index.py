@@ -6,6 +6,7 @@ import json
 import sys
 
 RE_META = re.compile(r'^<!--\s*(\w+)\s*[:=]\s*(.+?)\s*-->$')
+VERSION_PLACEHOLDER = '{{VERSION}}'
 
 CONFIG_FILE = 'config.json'
 
@@ -62,9 +63,16 @@ def generate(config):
     exclude_dirs = config.get('exclude_dirs', ['js', 'css', 'game'])
     output_file = os.path.join(source_root, 'articles.json')
 
+    version = config.get('version', 0) + 1
+    config['version'] = version
+
+    with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+        json.dump(config, f, ensure_ascii=False, indent=2)
+
     articles = scan(source_root, page_ext, exclude_dirs)
 
     output = {
+        'version': version,
         'categories': config.get('categories', {}),
         'category_order': config.get('category_order', []),
         'articles': articles
@@ -72,7 +80,21 @@ def generate(config):
 
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
-    print('Generated %s with %d articles' % (output_file, len(articles)))
+    print('Generated %s with %d articles (v%d)' % (output_file, len(articles), version))
+
+    apply_version_to_html(source_root, version)
+
+
+def apply_version_to_html(source_root, version):
+    index_path = os.path.join(source_root, 'index.html')
+    if not os.path.exists(index_path):
+        return
+    with open(index_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    content = re.sub(r'\?v=\d+', '?v=' + str(version), content)
+    content = content.replace(VERSION_PLACEHOLDER, '?v=' + str(version))
+    with open(index_path, 'w', encoding='utf-8') as f:
+        f.write(content)
 
 
 if __name__ == '__main__':
