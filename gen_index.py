@@ -3,11 +3,16 @@
 import os
 import re
 import json
+import sys
 
 RE_META = re.compile(r'^<!--\s*(\w+)\s*[:=]\s*(.+?)\s*-->$')
-PAGE_EXT = '.md'
-SOURCE_ROOT = 'docs'
-OUTPUT_FILE = os.path.join(SOURCE_ROOT, 'articles.json')
+
+CONFIG_FILE = 'config.json'
+
+
+def load_config():
+    with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+        return json.load(f)
 
 
 def parse_meta(content):
@@ -19,12 +24,12 @@ def parse_meta(content):
     return meta
 
 
-def scan(source_root):
+def scan(source_root, page_ext, exclude_dirs):
     result = []
     for root, dirs, files in os.walk(source_root):
-        dirs[:] = [d for d in dirs if d not in ('js', 'css', 'game')]
+        dirs[:] = [d for d in dirs if d not in tuple(exclude_dirs)]
         for filename in files:
-            if not filename.endswith(PAGE_EXT):
+            if not filename.endswith(page_ext):
                 continue
             file_path = os.path.join(root, filename)
             relpath = os.path.relpath(root, source_root)
@@ -33,7 +38,7 @@ def scan(source_root):
             else:
                 relpath = '/' + relpath
 
-            name = filename[:-len(PAGE_EXT)]
+            name = filename[:-len(page_ext)]
             path = relpath + '/' + name
 
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -51,8 +56,25 @@ def scan(source_root):
     return result
 
 
+def generate(config):
+    source_root = config.get('source_root', 'docs')
+    page_ext = config.get('page_ext', '.md')
+    exclude_dirs = config.get('exclude_dirs', ['js', 'css', 'game'])
+    output_file = os.path.join(source_root, 'articles.json')
+
+    articles = scan(source_root, page_ext, exclude_dirs)
+
+    output = {
+        'categories': config.get('categories', {}),
+        'category_order': config.get('category_order', []),
+        'articles': articles
+    }
+
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(output, f, ensure_ascii=False, indent=2)
+    print('Generated %s with %d articles' % (output_file, len(articles)))
+
+
 if __name__ == '__main__':
-    articles = scan(SOURCE_ROOT)
-    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
-        json.dump(articles, f, ensure_ascii=False, indent=2)
-    print('Generated %s with %d articles' % (OUTPUT_FILE, len(articles)))
+    config = load_config()
+    generate(config)

@@ -15,14 +15,8 @@ var md = new remarkable.Remarkable({
 });
 
 var articlesCache = null;
-
-var CATEGORIES = {
-    'jottings': '随笔',
-    'note': '笔记',
-    'keyboard': '自制键盘',
-    'pgit': 'PGIT',
-    '': '其他'
-};
+var categoriesCache = null;
+var categoryOrderCache = null;
 
 function requestJSON(url, success, failed) {
     var xh = new XMLHttpRequest();
@@ -45,8 +39,10 @@ function loadArticles(callback) {
         return;
     }
     requestJSON('/articles.json', function (data) {
-        articlesCache = data;
-        callback(data);
+        categoriesCache = data.categories || {};
+        categoryOrderCache = data.category_order || Object.keys(categoriesCache);
+        articlesCache = data.articles || data;
+        callback(articlesCache);
     }, function () {
         document.getElementById('content').innerHTML = '<h2>加载文章列表失败</h2>';
     });
@@ -60,6 +56,11 @@ function getCategory(path) {
     return '';
 }
 
+function getCategoryLabel(cat) {
+    if (!cat) return '其他';
+    return categoriesCache[cat] || cat;
+}
+
 function renderSidebar(activePath) {
     loadArticles(function (articles) {
         var grouped = {};
@@ -70,10 +71,10 @@ function renderSidebar(activePath) {
         });
 
         var html = '';
-        var catOrder = ['jottings', 'note', 'keyboard', 'pgit', ''];
-        catOrder.forEach(function (cat) {
+        var order = categoryOrderCache || Object.keys(categoriesCache);
+        order.forEach(function (cat) {
             if (!grouped[cat]) return;
-            var label = CATEGORIES[cat] || cat;
+            var label = getCategoryLabel(cat);
             html += '<div class="sidebar-category">';
             html += '<div class="sidebar-category-title">' + label + '</div>';
             html += '<ul class="sidebar-article-list">';
@@ -83,6 +84,17 @@ function renderSidebar(activePath) {
             });
             html += '</ul></div>';
         });
+
+        if (grouped['']) {
+            html += '<div class="sidebar-category">';
+            html += '<div class="sidebar-category-title">其他</div>';
+            html += '<ul class="sidebar-article-list">';
+            grouped[''].forEach(function (a) {
+                var cls = (activePath && a.path === activePath) ? ' class="active"' : '';
+                html += '<li><a href="#' + a.path + '"' + cls + '>' + a.title + '</a></li>';
+            });
+            html += '</ul></div>';
+        }
 
         document.getElementById('sidebar-inner').innerHTML = html;
     });
