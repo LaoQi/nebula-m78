@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 4,
   "categories": {
     "jottings": "随笔",
     "note": "笔记",
@@ -15,6 +15,11 @@
     "pgit"
   ],
   "articles": [
+    {
+      "title": "自己写blog太麻烦，想想什么时候丢给AI写算了",
+      "path": "/jottings/自己写blog太麻烦_想想什么时候丢给AI写算了",
+      "date": "2026-07-29"
+    },
     {
       "title": "对Agent的一些思考",
       "path": "/ai/thoughts_about_ai_Agents",
