@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 6,
   "categories": {
     "jottings": "随笔",
     "note": "笔记",
@@ -15,6 +15,11 @@
     "pgit"
   ],
   "articles": [
+    {
+      "title": "内网AI基础设施的几个小目标",
+      "path": "/ai/home_ai_infra",
+      "date": "2026-08-30"
+    },
     {
       "title": "自己写blog太麻烦，想想什么时候丢给AI写算了",
       "path": "/jottings/自己写blog太麻烦_想想什么时候丢给AI写算了",
