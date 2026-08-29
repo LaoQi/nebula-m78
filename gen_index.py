@@ -62,39 +62,59 @@ def generate(config):
     page_ext = config.get('page_ext', '.md')
     exclude_dirs = config.get('exclude_dirs', ['js', 'css', 'game'])
     output_file = os.path.join(source_root, 'articles.json')
+    index_path = os.path.join(source_root, 'index.html')
+    version = config.get('version', 0)
 
-    version = config.get('version', 0) + 1
+    articles = scan(source_root, page_ext, exclude_dirs)
+
+    def dump_output(v):
+        return json.dumps({
+            'version': v,
+            'categories': config.get('categories', {}),
+            'category_order': config.get('category_order', []),
+            'articles': articles
+        }, ensure_ascii=False, indent=2)
+
+    current_output = None
+    if os.path.exists(output_file):
+        with open(output_file, 'r', encoding='utf-8') as f:
+            current_output = f.read()
+
+    current_html = None
+    if os.path.exists(index_path):
+        with open(index_path, 'r', encoding='utf-8') as f:
+            current_html = f.read()
+
+    if current_output == dump_output(version) and current_html == render_index_html(source_root, version):
+        print('Index up to date (v%d)' % version)
+        return
+
+    version += 1
     config['version'] = version
 
     with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
         json.dump(config, f, ensure_ascii=False, indent=2)
 
-    articles = scan(source_root, page_ext, exclude_dirs)
-
-    output = {
-        'version': version,
-        'categories': config.get('categories', {}),
-        'category_order': config.get('category_order', []),
-        'articles': articles
-    }
-
     with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
+        f.write(dump_output(version))
+
+    expected_html = render_index_html(source_root, version)
+    if expected_html is not None:
+        with open(index_path, 'w', encoding='utf-8') as f:
+            f.write(expected_html)
+
     print('Generated %s with %d articles (v%d)' % (output_file, len(articles), version))
 
-    apply_version_to_html(source_root, version)
 
-
-def apply_version_to_html(source_root, version):
+def render_index_html(source_root, version):
     index_path = os.path.join(source_root, 'index.html')
     if not os.path.exists(index_path):
-        return
+        return None
     with open(index_path, 'r', encoding='utf-8') as f:
         content = f.read()
     content = re.sub(r'\?v=\d+', '?v=' + str(version), content)
     content = content.replace(VERSION_PLACEHOLDER, '?v=' + str(version))
-    with open(index_path, 'w', encoding='utf-8') as f:
-        f.write(content)
+    return content
 
 
 if __name__ == '__main__':
